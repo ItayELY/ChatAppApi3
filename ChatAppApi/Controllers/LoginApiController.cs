@@ -14,87 +14,29 @@ namespace ChatAppMVC.Controllers
     [ApiController]
 
     [Route("api/[controller]")]
-    public class UsersApiController : Controller
+    public class LoginApiController : Controller
     {
         private readonly ChatAppMVCContext _context;
 
-         public UsersApiController(ChatAppMVCContext context)
+        public LoginApiController(ChatAppMVCContext context)
         {
             _context = context;
-            
-        }
 
-        // GET: Users
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            List<Contact> contacts = new List<Contact>();
-            Contact c = new Contact { id = "itay", name = "itti", server = "server", };
-            contacts.Add(c);
-            User u = new User { id = "u", password = "u", contacts = contacts, name = "u" };
-            var user = await _context.User.FindAsync("u");
-            if (user == null)
-            {
-                _context.Add(u);
-                await _context.SaveChangesAsync();
-            }
-            return Json(await _context.User.ToListAsync());
-        }
-
-
-        /*
-
-        // GET: Users/Create
-        public IActionResult Register()
-        {
-            return View();
         }
 
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         
-        */
+
         
-        [HttpPost]
-        public async Task<IActionResult> Register([Bind("id,name,password")] User user)
-        {
-
-                if (ModelState.IsValid)
-                {
-                    var q = from u in _context.User
-                            where u.id == user.id
-                            select u;
-                    if (q.Count() > 0)
-                    {
-                    return BadRequest();
-;                    }
-                    else
-                    {
-                        _context.Add(user);
-                        await _context.SaveChangesAsync();
-                    return Created(string.Format("/api/UsersApi/{0}", user.id), user);
-                    }
-                }
-            return BadRequest();
 
 
-        }
-        
-        /*
-        public IActionResult Login()
-        {
-
-            return View();
-        }
-        */
-        
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        /*
+        
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([Bind("id,password")] User user)
         {
             if (ModelState.IsValid)
@@ -103,14 +45,14 @@ namespace ChatAppMVC.Controllers
                 if (q.Any())
                 {
                     HttpContext.Session.SetString("id", q.First().id);
-                    return Json(q);
+                    return Json(q.First());
                 }
                 return Json("{}");
             }
-            return View(user);
+            return BadRequest();
         }
-        */
         
+
         /*
         [HttpGet]
         public async Task<IActionResult> contacts()
