@@ -38,8 +38,9 @@ namespace ChatAppMVC.Controllers
                 _context.Add(u);
                 await _context.SaveChangesAsync();
             }
+            string currentUser = HttpContext.Session.GetString("id");
             var q = from currentUserContacts in _context.Contact
-                    where currentUserContacts.Userid == HttpContext.Session.GetString("id")
+                    where currentUserContacts.Userid == currentUser
                     select currentUserContacts;
             List<Contact> contactsList = q.ToList();
             return Json(contactsList);

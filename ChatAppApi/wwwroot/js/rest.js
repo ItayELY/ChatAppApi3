@@ -33,7 +33,19 @@ async function login() {
         },
         redirect: 'follow', // manual, *follow, error
         referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify({ id: 'heya', password: 'hey' }) // body data type must match "Content-Type" header
+        body: JSON.stringify({ id: 'u', password: 'u' }) // body data type must match "Content-Type" header
     });
     console.log(r.json());
+}
+
+async function contacts() {
+    const r = await fetch('/api/Contacts');
+    const d = r.json();
+    console.log(d);
+}
+
+async function contact() {
+    const r = await fetch('/api/Contacts/itay');
+    const d = r.json();
+    console.log(d);
 }
