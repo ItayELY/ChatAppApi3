@@ -2,13 +2,11 @@
 {
     public class Contact
     {
-        public string id { get; set; }
+        public string Userid { get; set; }
+        public int id { get; set; }
+        public string Contactid { get; set; }
         public string name { get; set; }
         public string server { get; set; }
-        public string? last { get; set; }
-        public DateTime? lastdate { get; set; }
 
-        public List<Message>? messages { get; set; }
-        public string Userid { get; set; }
     }
 }

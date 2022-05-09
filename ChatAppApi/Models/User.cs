@@ -15,7 +15,7 @@ namespace ChatAppMVC.Models
         public void addContact(Contact c)
         {
             contacts.Add(c);
-           
+
         }
     }
 }

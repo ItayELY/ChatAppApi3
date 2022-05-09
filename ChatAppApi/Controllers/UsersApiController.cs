@@ -29,15 +29,7 @@ namespace ChatAppMVC.Controllers
         public async Task<IActionResult> Index()
         {
             List<Contact> contacts = new List<Contact>();
-            Contact c = new Contact { id = "itay", name = "itti", server = "server", };
-            contacts.Add(c);
-            User u = new User { id = "u", password = "u", contacts = contacts, name = "u" };
-            var user = await _context.User.FindAsync("u");
-            if (user == null)
-            {
-                _context.Add(u);
-                await _context.SaveChangesAsync();
-            }
+        
             return Json(await _context.User.ToListAsync());
         }
 

@@ -28,16 +28,7 @@ namespace ChatAppMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<Contact> contacts = new List<Contact>();
-            Contact c = new Contact { id = "itay", name = "itti", server = "server", };
-            contacts.Add(c);
-            User u = new User { id = "u", password = "u", contacts = contacts, name = "u" };
-            var user = await _context.User.FindAsync("u");
-            if (user == null)
-            {
-                _context.Add(u);
-                await _context.SaveChangesAsync();
-            }
+           
             string currentUser = HttpContext.Session.GetString("id");
             var q = from currentUserContacts in _context.Contact
                     where currentUserContacts.Userid == currentUser
@@ -47,11 +38,11 @@ namespace ChatAppMVC.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> getContacts(string id)
+        public async Task<IActionResult> Contact(string id)
         {
             var q = from currentUserContact in _context.Contact
                     where currentUserContact.Userid == HttpContext.Session.GetString("id")
-                    && currentUserContact.id == id
+                    && currentUserContact.Contactid == id
                     select currentUserContact;
             if(q.Count() == 0)
             {
@@ -61,28 +52,15 @@ namespace ChatAppMVC.Controllers
         }
 
 
-        /*
-
-        // GET: Users/Create
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        
-        */
 
         [HttpPost]
-        public async Task<IActionResult> Register([Bind("id,name,password")] User user)
+        public async Task<IActionResult> Contact([Bind("Userid, Contactid,name,Server")] Contact contact)
         {
 
             if (ModelState.IsValid)
             {
-                var q = from u in _context.User
-                        where u.id == user.id
+                var q = from u in _context.Contact
+                        where u.Contactid == contact.Contactid && u.Userid == contact.Userid
                         select u;
                 if (q.Count() > 0)
                 {
@@ -91,9 +69,9 @@ namespace ChatAppMVC.Controllers
                 }
                 else
                 {
-                    _context.Add(user);
+                    _context.Contact.Add(contact);
                     await _context.SaveChangesAsync();
-                    return Created(string.Format("/api/UsersApi/{0}", user.id), user);
+                    return Created(string.Format("/api/UsersApi/{0}", contact.id), contact);
                 }
             }
             return BadRequest();
