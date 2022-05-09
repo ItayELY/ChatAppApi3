@@ -4,6 +4,7 @@ using ChatAppMVC.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatAppMVC.Migrations
 {
     [DbContext(typeof(ChatAppMVCContext))]
-    partial class ChatAppMVCContextModelSnapshot : ModelSnapshot
+    [Migration("20220509193246_intify_Contactid_message")]
+    partial class intify_Contactid_message
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

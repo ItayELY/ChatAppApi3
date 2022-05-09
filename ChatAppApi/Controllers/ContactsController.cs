@@ -90,9 +90,33 @@ namespace ChatAppMVC.Controllers
             }
             int connection = q.First().id;
             var q2 = from u in _context.Message
-                     where u.id == connection
+                     where u.Contactid == connection
                      select u;
             return Json(q2);
+        }
+        [HttpPost("{contactId}/Messages")]
+        public async Task<IActionResult> Messages(string contactId, [Bind("content, created, sent")]  Message message )
+        {
+            string userr = HttpContext.Session.GetString("id");
+
+            if (ModelState.IsValid)
+            {
+                var q = from u in _context.Contact
+                        where u.Userid == userr && u.Contactid == contactId
+                        select u;
+                if (q.Count() == 0)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    message.Contactid = q.First().id;
+                        _context.Message.Add(message);
+                    await _context.SaveChangesAsync();
+                    return Created(string.Format("/api/UsersApi/{0}", message.id), message);
+                }
+            }
+            return BadRequest();
         }
 
         /*
