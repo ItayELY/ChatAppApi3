@@ -65,7 +65,6 @@ namespace ChatAppMVC.Controllers
                 if (q.Count() > 0)
                 {
                     return BadRequest();
-                    ;
                 }
                 else
                 {
@@ -75,8 +74,25 @@ namespace ChatAppMVC.Controllers
                 }
             }
             return BadRequest();
+        }
 
-
+        [HttpGet("{id}/Messages")]
+        public async Task<IActionResult> Messages(string id)
+        {
+            string curUs = HttpContext.Session.GetString("id");
+            var q = from currentUserContact in _context.Contact
+                    where currentUserContact.Userid == curUs
+                    && currentUserContact.Contactid == id
+                    select currentUserContact;
+            if (q.Count() == 0)
+            {
+                return Json("");
+            }
+            int connection = q.First().id;
+            var q2 = from u in _context.Message
+                     where u.id == connection
+                     select u;
+            return Json(q2);
         }
 
         /*
