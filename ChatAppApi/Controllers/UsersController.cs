@@ -123,7 +123,7 @@ namespace ChatAppMVC.Controllers
                 
                 else
                 {
-                    contact.UserId = HttpContext.Session.GetString("id");
+                    //contact.id = HttpContext.Session.GetString("id");
                     _context.Contact.Add(contact);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Login));

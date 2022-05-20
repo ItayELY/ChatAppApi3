@@ -10,6 +10,7 @@ namespace ChatAppMVC.Models
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+        public string Server { get; set; }
         public List<Contact> Contacts { get; set; }
 
         public User(string id, string name, string password)
@@ -18,6 +19,7 @@ namespace ChatAppMVC.Models
             Name = name;
             Password = password;
             Contacts = new List<Contact>();
+            Server = "http://localhost:7228";
         }
         public void addContact(Contact c)
         {

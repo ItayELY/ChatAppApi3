@@ -16,31 +16,47 @@ namespace ChatAppMVC.Controllers
     [Route("api/[controller]")]
     public class ContactsController : Controller
     {
-        private readonly ChatAppMVCContext _context;
+        private readonly IService<User> uService;
+        private readonly IService<Chat> cService;
 
-        public ContactsController(ChatAppMVCContext context)
+        public ContactsController()
         {
-            _context = context;
+            uService = new UserService();
+            cService = new ChatService();
 
         }
 
         // GET: Contacts
         [HttpGet]
-        public async Task<IActionResult> Index()
+        [Route("/api/contacts/?userid={user}")]
+        public IActionResult Get(string user)
         {
-           
-            string currentUser = HttpContext.Session.GetString("id");
-            var q = from currentUserContacts in _context.Contact
-                    where currentUserContacts.UserId == currentUser
-                    select currentUserContacts;
-            List<Contact> contactsList = q.ToList();
-            return Json(contactsList);
+
+            /* string currentUser = HttpContext.Session.GetString("id");
+             var q = from currentUserContacts in service.Contact
+                     where currentUserContacts.UserId == currentUser
+                     select currentUserContacts;
+             List<Contact> contactsList = q.ToList();
+             return Json(contactsList);*/
+            User x = uService.GetById(user);
+            return Ok(x.Contacts);
         }
 
-        [HttpGet("{id}")]
+        // GET: Contacts
+        [HttpGet]
+        [Route("/api/contacts/default")]
+        public IActionResult Default()
+        {
+
+           
+            return Ok("Hi!!!!");
+        }
+
+
+        /*[HttpGet("{id}")]
         public async Task<IActionResult> Contact(string id)
         {
-            var q = from currentUserContact in _context.Contact
+            var q = from currentUserContact in service.Contact
                     where currentUserContact.UserId == HttpContext.Session.GetString("id")
                     && currentUserContact.ContactId == id
                     select currentUserContact;
@@ -49,75 +65,75 @@ namespace ChatAppMVC.Controllers
                 return Json(null);
             }
             return Json(q.First());
-        }
+        }*/
 
+        /*
 
-
-        [HttpPost]
-        public async Task<IActionResult> Contact([Bind("Userid, Contactid,name,Server")] Contact contact)
-        {
-
-            if (ModelState.IsValid)
-            {
-                var q = from u in _context.Contact
-                        where u.ContactId == contact.ContactId && u.UserId == contact.UserId
-                        select u;
-                if (q.Count() > 0)
+                [HttpPost]
+                public async Task<IActionResult> Contact([Bind("Userid, Contactid,name,Server")] Contact contact)
                 {
+
+                    if (ModelState.IsValid)
+                    {
+                        var q = from u in service.Contact
+                                where u.ContactId == contact.ContactId && u.UserId == contact.UserId
+                                select u;
+                        if (q.Count() > 0)
+                        {
+                            return BadRequest();
+                        }
+                        else
+                        {
+                            service.Contact.Add(contact);
+                            await service.SaveChangesAsync();
+                            return Created(string.Format("/api/UsersApi/{0}", contact.Id), contact);
+                        }
+                    }
                     return BadRequest();
                 }
-                else
+
+                [HttpGet("{id}/Messages")]
+                public async Task<IActionResult> Messages(string id)
                 {
-                    _context.Contact.Add(contact);
-                    await _context.SaveChangesAsync();
-                    return Created(string.Format("/api/UsersApi/{0}", contact.Id), contact);
+                    string curUs = HttpContext.Session.GetString("id");
+                    var q = from currentUserContact in service.Contact
+                            where currentUserContact.UserId == curUs
+                            && currentUserContact.ContactId == id
+                            select currentUserContact;
+                    if (q.Count() == 0)
+                    {
+                        return Json("");
+                    }
+                    int connection = q.First().Id;
+                    var q2 = from u in service.Message
+                             where u.Contactid == connection
+                             select u;
+                    return Json(q2);
                 }
-            }
-            return BadRequest();
-        }
-
-        [HttpGet("{id}/Messages")]
-        public async Task<IActionResult> Messages(string id)
-        {
-            string curUs = HttpContext.Session.GetString("id");
-            var q = from currentUserContact in _context.Contact
-                    where currentUserContact.UserId == curUs
-                    && currentUserContact.ContactId == id
-                    select currentUserContact;
-            if (q.Count() == 0)
-            {
-                return Json("");
-            }
-            int connection = q.First().Id;
-            var q2 = from u in _context.Message
-                     where u.Contactid == connection
-                     select u;
-            return Json(q2);
-        }
-        [HttpPost("{contactId}/Messages")]
-        public async Task<IActionResult> Messages(string contactId, [Bind("content, created, sent")]  Message message )
-        {
-            string userr = HttpContext.Session.GetString("id");
-
-            if (ModelState.IsValid)
-            {
-                var q = from u in _context.Contact
-                        where u.UserId == userr && u.ContactId == contactId
-                        select u;
-                if (q.Count() == 0)
+                [HttpPost("{contactId}/Messages")]
+                public async Task<IActionResult> Messages(string contactId, [Bind("content, created, sent")]  Message message )
                 {
+                    string userr = HttpContext.Session.GetString("id");
+
+                    if (ModelState.IsValid)
+                    {
+                        var q = from u in service.Contact
+                                where u.UserId == userr && u.ContactId == contactId
+                                select u;
+                        if (q.Count() == 0)
+                        {
+                            return BadRequest();
+                        }
+                        else
+                        {
+                            message.ContactId = q.First().Id;
+                                service.Message.Add(message);
+                            await service.SaveChangesAsync();
+                            return Created(string.Format("/api/UsersApi/{0}", message.Id), message);
+                        }
+                    }
                     return BadRequest();
-                }
-                else
-                {
-                    message.Contactid = q.First().Id;
-                        _context.Message.Add(message);
-                    await _context.SaveChangesAsync();
-                    return Created(string.Format("/api/UsersApi/{0}", message.Id), message);
-                }
-            }
-            return BadRequest();
-        }
+                }*/
 
         /*
         public IActionResult Login()

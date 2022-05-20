@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ChatAppMVC.Data;
+using ChatAppMVC.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ChatAppMVCContext>(options =>
@@ -26,13 +28,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseSession();
+//app.UseSession();
 app.UseRouting();
 
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Reviews}/{action=Index}/{id?}");
+    pattern: "{controller=Contacts}/{action=Default}");
+UserService.InitContacts();
+
 
 app.Run();
