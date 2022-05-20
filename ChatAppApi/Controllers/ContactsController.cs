@@ -31,7 +31,7 @@ namespace ChatAppMVC.Controllers
            
             string currentUser = HttpContext.Session.GetString("id");
             var q = from currentUserContacts in _context.Contact
-                    where currentUserContacts.Userid == currentUser
+                    where currentUserContacts.UserId == currentUser
                     select currentUserContacts;
             List<Contact> contactsList = q.ToList();
             return Json(contactsList);
@@ -41,8 +41,8 @@ namespace ChatAppMVC.Controllers
         public async Task<IActionResult> Contact(string id)
         {
             var q = from currentUserContact in _context.Contact
-                    where currentUserContact.Userid == HttpContext.Session.GetString("id")
-                    && currentUserContact.Contactid == id
+                    where currentUserContact.UserId == HttpContext.Session.GetString("id")
+                    && currentUserContact.ContactId == id
                     select currentUserContact;
             if(q.Count() == 0)
             {
@@ -60,7 +60,7 @@ namespace ChatAppMVC.Controllers
             if (ModelState.IsValid)
             {
                 var q = from u in _context.Contact
-                        where u.Contactid == contact.Contactid && u.Userid == contact.Userid
+                        where u.ContactId == contact.ContactId && u.UserId == contact.UserId
                         select u;
                 if (q.Count() > 0)
                 {
@@ -70,7 +70,7 @@ namespace ChatAppMVC.Controllers
                 {
                     _context.Contact.Add(contact);
                     await _context.SaveChangesAsync();
-                    return Created(string.Format("/api/UsersApi/{0}", contact.id), contact);
+                    return Created(string.Format("/api/UsersApi/{0}", contact.Id), contact);
                 }
             }
             return BadRequest();
@@ -81,14 +81,14 @@ namespace ChatAppMVC.Controllers
         {
             string curUs = HttpContext.Session.GetString("id");
             var q = from currentUserContact in _context.Contact
-                    where currentUserContact.Userid == curUs
-                    && currentUserContact.Contactid == id
+                    where currentUserContact.UserId == curUs
+                    && currentUserContact.ContactId == id
                     select currentUserContact;
             if (q.Count() == 0)
             {
                 return Json("");
             }
-            int connection = q.First().id;
+            int connection = q.First().Id;
             var q2 = from u in _context.Message
                      where u.Contactid == connection
                      select u;
@@ -102,7 +102,7 @@ namespace ChatAppMVC.Controllers
             if (ModelState.IsValid)
             {
                 var q = from u in _context.Contact
-                        where u.Userid == userr && u.Contactid == contactId
+                        where u.UserId == userr && u.ContactId == contactId
                         select u;
                 if (q.Count() == 0)
                 {
@@ -110,10 +110,10 @@ namespace ChatAppMVC.Controllers
                 }
                 else
                 {
-                    message.Contactid = q.First().id;
+                    message.Contactid = q.First().Id;
                         _context.Message.Add(message);
                     await _context.SaveChangesAsync();
-                    return Created(string.Format("/api/UsersApi/{0}", message.id), message);
+                    return Created(string.Format("/api/UsersApi/{0}", message.Id), message);
                 }
             }
             return BadRequest();

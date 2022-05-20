@@ -41,10 +41,10 @@ namespace ChatAppMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var q = _context.User.Where(u => u.id == user.id && u.password == user.password);
+                var q = _context.User.Where(u => u.Id == user.Id && u.Password == user.Password);
                 if (q.Any())
                 {
-                    HttpContext.Session.SetString("id", q.First().id);
+                    HttpContext.Session.SetString("id", q.First().Id);
                     return Json(q.First());
                 }
                 return Json("{}");

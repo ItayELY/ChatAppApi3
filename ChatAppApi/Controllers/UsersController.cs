@@ -51,7 +51,7 @@ namespace ChatAppMVC.Controllers
                 if (ModelState.IsValid)
                 {
                     var q = from u in _context.User
-                            where u.id == user.id
+                            where u.Id == user.Id
                             select u;
                     if (q.Count() > 0)
                     {
@@ -83,10 +83,10 @@ namespace ChatAppMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var q = _context.User.Where(u => u.id == user.id && u.password == user.password);
+                var q = _context.User.Where(u => u.Id == user.Id && u.Password == user.Password);
                 if (q.Any())
                 {
-                    HttpContext.Session.SetString("id", q.First().id);
+                    HttpContext.Session.SetString("id", q.First().Id);
                     return Json(q);
                 }
                 return Json("{}");
@@ -99,8 +99,8 @@ namespace ChatAppMVC.Controllers
                 return RedirectToAction("Login", "Users");
             string id = HttpContext.Session.GetString("id");
             var q = from u in _context.User
-                    where u.id == id
-                    select u.contacts;
+                    where u.Id == id
+                    select u.Contacts;
 
             return Json(q);
         }
@@ -114,7 +114,7 @@ namespace ChatAppMVC.Controllers
             if (ModelState.IsValid)
             {
                 var q = from u in _context.User
-                        where u.id == HttpContext.Session.GetString("id")
+                        where u.Id == HttpContext.Session.GetString("id")
                         select u;
                 if (q.Count() < 0)
                 {
@@ -123,7 +123,7 @@ namespace ChatAppMVC.Controllers
                 
                 else
                 {
-                    contact.Userid = HttpContext.Session.GetString("id");
+                    contact.UserId = HttpContext.Session.GetString("id");
                     _context.Contact.Add(contact);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Login));
@@ -155,7 +155,7 @@ namespace ChatAppMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("id,name,password")] User user)
         {
-            if (id != user.id)
+            if (id != user.Id)
             {
                 return NotFound();
             }
@@ -169,7 +169,7 @@ namespace ChatAppMVC.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.id))
+                    if (!UserExists(user.Id))
                     {
                         return NotFound();
                     }
@@ -192,7 +192,7 @@ namespace ChatAppMVC.Controllers
             }
 
             var user = await _context.User
-                .FirstOrDefaultAsync(m => m.id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();
@@ -214,7 +214,7 @@ namespace ChatAppMVC.Controllers
 
         private bool UserExists(string id)
         {
-            return _context.User.Any(e => e.id == id);
+            return _context.User.Any(e => e.Id == id);
         }
     }
 }

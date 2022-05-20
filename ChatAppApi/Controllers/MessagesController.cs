@@ -35,7 +35,7 @@ namespace ChatAppMVC.Controllers
             }
 
             var message = await _context.Message
-                .FirstOrDefaultAsync(m => m.id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (message == null)
             {
                 return NotFound();
@@ -89,7 +89,7 @@ namespace ChatAppMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("id,content,created,sent")] Message message)
         {
-            if (id != message.id)
+            if (id != message.Id)
             {
                 return NotFound();
             }
@@ -103,7 +103,7 @@ namespace ChatAppMVC.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MessageExists(message.id))
+                    if (!MessageExists(message.Id))
                     {
                         return NotFound();
                     }
@@ -126,7 +126,7 @@ namespace ChatAppMVC.Controllers
             }
 
             var message = await _context.Message
-                .FirstOrDefaultAsync(m => m.id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (message == null)
             {
                 return NotFound();
@@ -148,7 +148,7 @@ namespace ChatAppMVC.Controllers
 
         private bool MessageExists(int id)
         {
-            return _context.Message.Any(e => e.id == id);
+            return _context.Message.Any(e => e.Id == id);
         }
     }
 }

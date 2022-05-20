@@ -2,11 +2,11 @@
 {
     public class Contact
     {
-        public string Userid { get; set; }
-        public int id { get; set; }
-        public string Contactid { get; set; }
-        public string name { get; set; }
-        public string server { get; set; }
+        public string UserId { get; set; }
+        public int Id { get; set; }
+        public string ContactId { get; set; }
+        public string Name { get; set; }
+        public string Server { get; set; }
 
     }
 }

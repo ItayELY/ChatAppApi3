@@ -1,5 +1,4 @@
-﻿#nullable disable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,89 +10,87 @@ using ChatAppMVC.Models;
 
 namespace ChatAppMVC.Controllers
 {
-    [ApiController]
-    [Route("api.[controller]")]
-    public class MessagesControllerAPI : Controller
+    public class ReviewsController : Controller
     {
         private readonly ChatAppMVCContext _context;
 
-        public MessagesControllerAPI(ChatAppMVCContext context)
+        public ReviewsController(ChatAppMVCContext context)
         {
             _context = context;
         }
 
-        // GET: Messages
-        [HttpGet]
+        // GET: Reviews
         public async Task<IActionResult> Index()
         {
-            return Json(await _context.Message.ToListAsync());
+              return _context.Review != null ? 
+                          View(await _context.Review.ToListAsync()) :
+                          Problem("Entity set 'ChatAppMVCContext.Review'  is null.");
         }
 
-        // GET: Messages/Details/5
-        [HttpGet("{id}")]
+        // GET: Reviews/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Review == null)
             {
                 return NotFound();
             }
 
-            var message = await _context.Message
+            var review = await _context.Review
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (message == null)
+            if (review == null)
             {
                 return NotFound();
             }
 
-            return Json(message);
+            return View(review);
         }
 
-        // GET: Messages/Create
+        // GET: Reviews/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Messages/Create
+        // POST: Reviews/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,content,created,sent")] Message message)
+        public async Task<IActionResult> Create([Bind("Id,Name,Content,dateTime")] Review review)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(message);
+                _context.Add(review);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(message);
+            return View(review);
         }
 
-        // GET: Messages/Edit/5
+        // GET: Reviews/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Review == null)
             {
                 return NotFound();
             }
 
-            var message = await _context.Message.FindAsync(id);
-            if (message == null)
+            var review = await _context.Review.FindAsync(id);
+            if (review == null)
             {
                 return NotFound();
             }
-            return View(message);
+            return View(review);
         }
 
-        // POST: Messages/Edit/5
+        // POST: Reviews/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,content,created,sent")] Message message)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Content,dateTime")] Review review)
         {
-            if (id != message.Id)
+            if (id != review.Id)
             {
                 return NotFound();
             }
@@ -102,12 +99,12 @@ namespace ChatAppMVC.Controllers
             {
                 try
                 {
-                    _context.Update(message);
+                    _context.Update(review);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MessageExists(message.Id))
+                    if (!ReviewExists(review.Id))
                     {
                         return NotFound();
                     }
@@ -118,41 +115,49 @@ namespace ChatAppMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(message);
+            return View(review);
         }
 
-        // GET: Messages/Delete/5
+        // GET: Reviews/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Review == null)
             {
                 return NotFound();
             }
 
-            var message = await _context.Message
+            var review = await _context.Review
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (message == null)
+            if (review == null)
             {
                 return NotFound();
             }
 
-            return View(message);
+            return View(review);
         }
 
-        // POST: Messages/Delete/5
+        // POST: Reviews/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var message = await _context.Message.FindAsync(id);
-            _context.Message.Remove(message);
+            if (_context.Review == null)
+            {
+                return Problem("Entity set 'ChatAppMVCContext.Review'  is null.");
+            }
+            var review = await _context.Review.FindAsync(id);
+            if (review != null)
+            {
+                _context.Review.Remove(review);
+            }
+            
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MessageExists(int id)
+        private bool ReviewExists(int id)
         {
-            return _context.Message.Any(e => e.Id == id);
+          return (_context.Review?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

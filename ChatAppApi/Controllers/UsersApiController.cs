@@ -55,7 +55,7 @@ namespace ChatAppMVC.Controllers
                 if (ModelState.IsValid)
                 {
                     var q = from u in _context.User
-                            where u.id == user.id
+                            where u.Id == user.Id
                             select u;
                     if (q.Count() > 0)
                     {
@@ -65,7 +65,7 @@ namespace ChatAppMVC.Controllers
                     {
                         _context.Add(user);
                         await _context.SaveChangesAsync();
-                    return Created(string.Format("/api/UsersApi/{0}", user.id), user);
+                    return Created(string.Format("/api/UsersApi/{0}", user.Id), user);
                     }
                 }
             return BadRequest();

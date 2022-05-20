@@ -5,16 +5,23 @@ namespace ChatAppMVC.Models
     public class User
     {
         [Key]
-        public string id { get; set; }
-        public string? name { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
         [Required]
         [DataType(DataType.Password)]
-        public string password { get; set; }
-        public List<Contact>? contacts { get; set; }
+        public string Password { get; set; }
+        public List<Contact> Contacts { get; set; }
 
+        public User(string id, string name, string password)
+        {
+            Id = id;
+            Name = name;
+            Password = password;
+            Contacts = new List<Contact>();
+        }
         public void addContact(Contact c)
         {
-            contacts.Add(c);
+            Contacts.Add(c);
 
         }
     }

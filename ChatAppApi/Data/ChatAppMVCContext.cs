@@ -20,5 +20,7 @@ namespace ChatAppMVC.Data
         public DbSet<ChatAppMVC.Models.Contact> Contact { get; set; }
 
         public DbSet<ChatAppMVC.Models.Message> Message { get; set; }
+
+        public DbSet<ChatAppMVC.Models.Review>? Review { get; set; }
     }
 }
