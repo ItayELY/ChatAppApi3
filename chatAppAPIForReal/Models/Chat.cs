@@ -12,5 +12,7 @@
             Interlocuters = interlocuters;
             Messages = messages;
         }
+        
+       
     }
 }

@@ -44,11 +44,21 @@
         {
             return _chats.Find(x => x.Id == id);
         }
+        public Chat GetBy2Users(string id1, string id2)
+        {
+            return _chats.Find(x => x.Interlocuters.Contains(id1) && x.Interlocuters.Contains(id2));
+        }
 
         public void Update(string id, Chat entity)
         {
             _chats.Remove(GetById(id));
             _chats.Add(entity);
+        }
+        public Message GetLastMessage(string id1, string id2)
+        {
+            Chat c = this.GetBy2Users(id1, id2);
+            c.Messages.Sort((x, y) => DateTime.Compare(x.Created, y.Created));
+            return c.Messages.First();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace ChatAppMVC.Controllers
     public class ContactsController : Controller
     {
         private readonly IService<User> uService;
-        private readonly IService<Chat> cService;
+        private readonly ChatService cService;
 
         public ContactsController()
         {
@@ -27,7 +27,7 @@ namespace ChatAppMVC.Controllers
         // GET: Contacts
         [HttpGet]
         //[Route("/api/contacts")]
-        public IActionResult Get(string id)
+        public IActionResult Get(string userId)
         {
 
             /* string currentUser = HttpContext.Session.GetString("id");
@@ -36,8 +36,30 @@ namespace ChatAppMVC.Controllers
                      select currentUserContacts;
              List<Contact> contactsList = q.ToList();
              return Json(contactsList);*/
-            User x = uService.GetById(id);
+            User x = uService.GetById(userId);
             return Ok(x.Contacts);
+        }
+
+        [HttpGet]
+        [Route("/api/contacts/{id}")]
+        public IActionResult GetSpecific(string userId, string id)
+        {
+
+            /* string currentUser = HttpContext.Session.GetString("id");
+             var q = from currentUserContacts in service.Contact
+                     where currentUserContacts.UserId == currentUser
+                     select currentUserContacts;
+             List<Contact> contactsList = q.ToList();
+             return Json(contactsList);*/
+            User x = uService.GetById(userId);
+            var cont = x.Contacts.Find(x => x.Id == id);
+            if(cont == null)
+            {
+                return NotFound();
+            }
+            cont.LastMessageContent = cService.GetLastMessage(userId, id).Content.ToString();
+            cont.LastMessageDate = cService.GetLastMessage(userId, id).Created;
+            return Ok(cont);
         }
 
         // GET: Contacts
@@ -46,7 +68,7 @@ namespace ChatAppMVC.Controllers
         public IActionResult Default()
         {
 
-           
+
             return Ok("Hi!!!!");
         }
 
@@ -65,73 +87,59 @@ namespace ChatAppMVC.Controllers
             return Json(q.First());
         }*/
 
+
+
+        [HttpPost]
+        public IActionResult Contact([Bind("Id,Name,Server")] Contact contact, string userId)
+        {
+            var curUser = uService.GetById(userId);
+            curUser.addContact(contact);
+            return StatusCode(201);
+        }
         /*
+        [HttpGet("{id}/Messages")]
+        public async Task<IActionResult> Messages(string id)
+        {
+            string curUs = HttpContext.Session.GetString("id");
+            var q = from currentUserContact in service.Contact
+                    where currentUserContact.UserId == curUs
+                    && currentUserContact.ContactId == id
+                    select currentUserContact;
+            if (q.Count() == 0)
+            {
+                return Json("");
+            }
+            int connection = q.First().Id;
+            var q2 = from u in service.Message
+                     where u.Contactid == connection
+                     select u;
+            return Json(q2);
+        }
+        [HttpPost("{contactId}/Messages")]
+        public async Task<IActionResult> Messages(string contactId, [Bind("content, created, sent")] Message message)
+        {
+            string userr = HttpContext.Session.GetString("id");
 
-                [HttpPost]
-                public async Task<IActionResult> Contact([Bind("Userid, Contactid,name,Server")] Contact contact)
+            if (ModelState.IsValid)
+            {
+                var q = from u in service.Contact
+                        where u.UserId == userr && u.ContactId == contactId
+                        select u;
+                if (q.Count() == 0)
                 {
-
-                    if (ModelState.IsValid)
-                    {
-                        var q = from u in service.Contact
-                                where u.ContactId == contact.ContactId && u.UserId == contact.UserId
-                                select u;
-                        if (q.Count() > 0)
-                        {
-                            return BadRequest();
-                        }
-                        else
-                        {
-                            service.Contact.Add(contact);
-                            await service.SaveChangesAsync();
-                            return Created(string.Format("/api/UsersApi/{0}", contact.Id), contact);
-                        }
-                    }
                     return BadRequest();
                 }
-
-                [HttpGet("{id}/Messages")]
-                public async Task<IActionResult> Messages(string id)
+                else
                 {
-                    string curUs = HttpContext.Session.GetString("id");
-                    var q = from currentUserContact in service.Contact
-                            where currentUserContact.UserId == curUs
-                            && currentUserContact.ContactId == id
-                            select currentUserContact;
-                    if (q.Count() == 0)
-                    {
-                        return Json("");
-                    }
-                    int connection = q.First().Id;
-                    var q2 = from u in service.Message
-                             where u.Contactid == connection
-                             select u;
-                    return Json(q2);
+                    message.ContactId = q.First().Id;
+                    service.Message.Add(message);
+                    await service.SaveChangesAsync();
+                    return Created(string.Format("/api/UsersApi/{0}", message.Id), message);
                 }
-                [HttpPost("{contactId}/Messages")]
-                public async Task<IActionResult> Messages(string contactId, [Bind("content, created, sent")]  Message message )
-                {
-                    string userr = HttpContext.Session.GetString("id");
-
-                    if (ModelState.IsValid)
-                    {
-                        var q = from u in service.Contact
-                                where u.UserId == userr && u.ContactId == contactId
-                                select u;
-                        if (q.Count() == 0)
-                        {
-                            return BadRequest();
-                        }
-                        else
-                        {
-                            message.ContactId = q.First().Id;
-                                service.Message.Add(message);
-                            await service.SaveChangesAsync();
-                            return Created(string.Format("/api/UsersApi/{0}", message.Id), message);
-                        }
-                    }
-                    return BadRequest();
-                }*/
+            }
+            return BadRequest();
+        }
+        */
 
         /*
         public IActionResult Login()
