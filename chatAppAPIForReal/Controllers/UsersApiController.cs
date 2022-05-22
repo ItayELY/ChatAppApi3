@@ -31,7 +31,7 @@ namespace ChatAppMVC.Controllers
         public IActionResult Index()
         {
             List<Contact> contacts = new List<Contact>();
-            return Ok();
+            return Ok(_userService.GetAll());
             /*return Json(await _context.User.ToListAsync());*/
         }
 
