@@ -49,7 +49,7 @@
                     //if (user.Contacts.Find(x=> x.Id == userId) == null)
                     var newCId = chat.Interlocuters.Find(x => x != userId);
                     var newC = userService.GetById(newCId);
-                    user.addContact(new Contact(newCId, newC.Name, newC.Server));
+                    user.AddContact(new Contact(newCId, newC.Name, newC.Server));
                 }
             }
 

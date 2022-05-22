@@ -90,12 +90,117 @@ namespace ChatAppMVC.Controllers
 
 
         [HttpPost]
+        //[Route("/api/contacts/{id}")]
         public IActionResult Contact([Bind("Id,Name,Server")] Contact contact, string userId)
         {
             var curUser = uService.GetById(userId);
-            curUser.addContact(contact);
+            curUser.AddContact(contact);
             return StatusCode(201);
         }
+
+        [HttpPut]
+        [Route("/api/contacts/{id}")]
+        public IActionResult PutSpecific([Bind("Name,Server")] Contact con, string id, string userId)
+        {
+
+
+            con.Id = id;
+            var curUser = uService.GetById(userId);
+            curUser.UpdateContact(id, con);
+            return StatusCode(204);
+        }
+
+
+        [HttpDelete]
+        [Route("/api/contacts/{id}")]
+        public IActionResult DeleteSpecific(string id, string userId)
+        {
+            User user = uService.GetById(userId);
+            Contact c = user.Contacts.Find(x => x.Id == id);
+            user.RemoveContact(c);
+            return StatusCode(204);
+        }
+
+
+
+
+        [HttpGet]
+        [Route("/api/contacts/{id}/messages")]
+        public IActionResult GetAllMessages(string userId, string id)
+        {
+            Chat c = cService.GetBy2Users(id, userId);
+            foreach(Message m in c.Messages)
+            {
+                if (m.SentBy == userId)
+                {
+                    m.Sent = true;
+                }
+                else
+                {
+                    m.Sent = false;
+                }
+            }
+            return Ok(c.Messages);
+        }
+
+
+        [HttpPost]
+        [Route("/api/contacts/{id}/messages")]
+        public IActionResult PostNewMessage([FromBody] string content, string userId, string id)
+        {
+            Chat c = cService.GetBy2Users(id, userId);
+            c.Messages.Add(new Message(content, DateTime.Now, true, userId));
+            return StatusCode(201);
+        }
+
+
+
+        [HttpGet]
+        [Route("/api/contacts/{id}/messages/{id2}")]
+        public IActionResult GetSpecificMessage(string userId, string id, string id2)
+        {
+            Chat c = cService.GetBy2Users(id, userId);
+           Message m =  c.Messages.Find(x => x.Id == Int32.Parse(id2));
+            return Ok(m);
+
+        }
+
+        [HttpPut]
+        [Route("/api/contacts/{id}/messages/{id2}")]
+        public IActionResult PutSpecificMessage([FromBody] string content, string userId, string id, string id2)
+        {
+            Chat c = cService.GetBy2Users(id, userId);
+            Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
+            m.Content = content;
+            return StatusCode(204);
+        }
+
+        [HttpDelete]
+        [Route("/api/contacts/{id}/messages/{id2}")]
+        public IActionResult DeleteSpecificMessage(string userId, string id, string id2)
+        {
+            Chat c = cService.GetBy2Users(id, userId);
+            Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
+            c.Messages.Remove(m);
+            return StatusCode(204);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /*
         [HttpGet("{id}/Messages")]
         public async Task<IActionResult> Messages(string id)
@@ -200,7 +305,7 @@ namespace ChatAppMVC.Controllers
                 {
                     ViewData["Error"] = "no user";
                 }
-                
+
                 else
                 {
                     contact.Userid = HttpContext.Session.GetString("id");

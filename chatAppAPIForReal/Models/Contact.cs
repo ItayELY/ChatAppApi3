@@ -3,7 +3,7 @@
     public class Contact
     {
         //public string UserId { get; set; }
-        public string Id { get; set; }
+        public string? Id { get; set; }
         //public string ContactId { get; set; }
         public string Name { get; set; }
         public string Server { get; set; }

@@ -21,10 +21,23 @@ namespace ChatAppMVC.Models
             Contacts = new List<Contact>();
             Server = "http://localhost:7228";
         }
-        public void addContact(Contact c)
+        public void AddContact(Contact c)
         {
             Contacts.Add(c);
 
         }
+        public void UpdateContact(string id ,Contact c)
+        {
+            
+            Contacts.Remove(Contacts.Find(x=> x.Id == id));
+            Contacts.Add(c);
+
+        }
+        public void RemoveContact(Contact c)
+        {
+            Contacts.Remove(c);
+
+        }
+
     }
 }
