@@ -48,7 +48,7 @@ namespace ChatAppMVC.Controllers
             var isCorrect = _userService.GetAll().Any(u => u.Id == user.Id && u.Password == user.Password);
             if (isCorrect)
             {
-                HttpContext.Session.SetString("id", user.Id);
+               
                 return Ok(_userService.GetAll().Find(u => u.Id == user.Id));
             }
             return NotFound();
