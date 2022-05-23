@@ -19,5 +19,16 @@
             SentBy = sentBy;
             CountId++;
         }
+
+        public Message(int id, string content, DateTime created, bool sent, string sentBy)
+        {
+            Id = CountId;
+            Content = content;
+            Created = created;
+            Sent = sent;
+            SentBy = sentBy;
+            CountId++;
+        }
+
     }
 }
