@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ChatAppMVC.Models;
+using chatAppAPIForReal.Models;
 
 namespace ChatAppMVC.Controllers
 {
@@ -188,11 +189,43 @@ namespace ChatAppMVC.Controllers
 
 
 
+        [HttpPost]
+        [Route("/api/invitation")]
+        public IActionResult Invite([Bind("From, To, Server")] Invitation invitation)
+        {
+            User user = uService.GetById(invitation.To);
+            if (user != null)
+            {
+                Contact contact = new Contact(invitation.From, invitation.From, invitation.Server);
+                user.AddContact(contact);
+                return StatusCode(201);
+            }
+            else
+            {
+                return StatusCode(422);
 
+            }
+        }
 
+        [HttpPost]
+        [Route("/api/transfer")]
+        public IActionResult Tranfer([Bind("From, To, Content")] Transfer transfer)
+        {
+            User user = uService.GetById(transfer.To);
+            Contact sender = user.Contacts.Find(x => x.Id == transfer.From);
+            if (user!= null && sender !=null)
+            {
+                Message m = new Message(transfer.Content, DateTime.Now, true, transfer.From);
+                Chat ch = cService.GetBy2Users(user.Id, sender.Id);
+                ch.Messages.Add(m);
+                return StatusCode(201);
+            }
+            else
+            {
+                return StatusCode(422);
 
-
-
+            }
+        }
 
 
 
