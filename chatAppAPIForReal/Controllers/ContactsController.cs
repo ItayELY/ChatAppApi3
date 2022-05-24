@@ -58,8 +58,8 @@ namespace ChatAppMVC.Controllers
             {
                 return NotFound();
             }
-            cont.LastMessageContent = cService.GetLastMessage(userId, id).Content.ToString();
-            cont.LastMessageDate = cService.GetLastMessage(userId, id).Created;
+            cont.Last = cService.GetLastMessage(userId, id).Content.ToString();
+            cont.LastDate = cService.GetLastMessage(userId, id).Created;
             return Ok(cont);
         }
 

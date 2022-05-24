@@ -7,8 +7,10 @@
         //public string ContactId { get; set; }
         public string Name { get; set; }
         public string Server { get; set; }
-        public string? LastMessageContent { get; set; }
-        public DateTime? LastMessageDate { get; set; }
+        //LastMessageContent
+        public string? Last { get; set; }
+        //LastMessageDate
+        public DateTime? LastDate { get; set; }
 
         public Contact(string id, string name, string server)   
         {
