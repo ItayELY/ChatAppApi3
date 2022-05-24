@@ -5,7 +5,7 @@ namespace chatAppAPIForReal.Hubs.Clients
 {
         public interface IClients
         {
-            Task ReceiveMessage(Message message);
+            Task ReceiveMessage(string message);
         }
     
 }
