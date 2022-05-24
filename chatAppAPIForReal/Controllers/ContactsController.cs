@@ -91,7 +91,7 @@ namespace ChatAppMVC.Controllers
 
 
         [HttpPost]
-        //[Route("/api/contacts/{id}")]
+        [Route("/api/contacts/{id}")]
         public IActionResult Contact([Bind("Id,Name,Server")] Contact contact, string userId)
         {
             var curUser = uService.GetById(userId);
