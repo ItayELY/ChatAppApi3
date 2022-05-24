@@ -2,7 +2,7 @@
 {
     public class ChatService : IService<Chat>
     {
-        private static List<Chat> _chats =
+        public static List<Chat> _chats =
             new List<Chat>
         {
             new Chat("1", new List<string>

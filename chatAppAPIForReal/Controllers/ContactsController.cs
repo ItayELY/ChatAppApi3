@@ -95,6 +95,12 @@ namespace ChatAppMVC.Controllers
         public IActionResult Contact([Bind("Id,Name,Server")] Contact contact, string userId)
         {
             var curUser = uService.GetById(userId);
+            List<string> inter = new List<string>();
+            inter.Add(userId);
+            inter.Add(contact.Id);
+            List<Message> messages = new List<Message>();
+            Chat c = new Chat(userId + " " +contact.Id, inter, messages);
+            cService.Create(c);
             curUser.AddContact(contact);
             return StatusCode(201);
         }
