@@ -240,6 +240,8 @@ namespace ChatAppMVC.Controllers
 
 
 
+
+
         /*
         [HttpGet("{id}/Messages")]
         public async Task<IActionResult> Messages(string id)

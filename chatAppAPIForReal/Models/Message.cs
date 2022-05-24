@@ -27,7 +27,6 @@
             Created = created;
             Sent = sent;
             SentBy = sentBy;
-            CountId++;
         }
 
     }

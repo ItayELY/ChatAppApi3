@@ -21,6 +21,8 @@ namespace ChatAppMVC.Models
             Contacts = new List<Contact>();
             Server = "http://localhost:7228";
         }
+
+       
         public void AddContact(Contact c)
         {
             Contacts.Add(c);

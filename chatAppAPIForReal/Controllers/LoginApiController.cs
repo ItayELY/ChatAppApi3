@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 using ChatAppMVC.Models;
+using chatAppAPIForReal.Models;
 
 namespace ChatAppMVC.Controllers
 {
@@ -52,6 +53,27 @@ namespace ChatAppMVC.Controllers
                 return Ok(_userService.GetAll().Find(u => u.Id == user.Id));
             }
             return NotFound();
+        }
+        [HttpPost]
+        [Route("/api/register")]
+        public IActionResult Register([Bind("id, name, password")] RegisteredUser reg)
+        {
+            /*if (ModelState.IsValid)
+            {*/
+            //if id exists:
+            User u = _userService.GetById(reg.Id);
+            if (u != null)
+            {
+                return StatusCode(422);
+            }
+            else
+            {
+                User newU = new User(reg.Id, reg.Name, reg.Password);
+                _userService.GetAll().Add(newU);
+                return StatusCode(201);
+            }
+
+
         }
 
 
