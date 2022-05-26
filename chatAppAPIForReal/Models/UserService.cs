@@ -6,7 +6,10 @@
         private static List<User> _users = new List<User>() {
             new User("yonadav", "Yonadav", "123"),
             new User("itay", "Itay", "123"),
-            new User("perki", "perki", "123")
+            new User("shtusel", "shtusel", "123"),
+            new User("kingDavid", "KingDavid", "123"),
+            new User("kingSolomon", "KingSolomon", "123"),
+            new User("kingHezekiah", "KingHezekiah", "123")
         };
         public int MyProperty { get; set; }
 

@@ -16,13 +16,60 @@
             }),
             new Chat("2", new List<string>
             {
-                "yonadav", "perki"
+                "yonadav", "shtusel"
             },new List<Message>{
-                new Message(1, "HI!!!! perki", DateTime.Now, true, "yonadav"),
-                new Message(2, "What up??", DateTime.Now, false, "perki"),
+                new Message(1, "HI!!!! shtusel", DateTime.Now, true, "yonadav"),
+                new Message(2, "What up??", DateTime.Now, false, "shtusel"),
                 new Message(3, "I am good", DateTime.Now, true, "yonadav"),
-                new Message(4, "glad to hear", DateTime.Now, false, "perki"),
+                new Message(4, "glad to hear", DateTime.Now, false, "shtusel"),
+            }),
+            new Chat("3", new List<string>
+            {
+                "itay", "shtusel"
+            },new List<Message>{
+                new Message(1, "HI!!!! shtusel", DateTime.Now, true, "itay"),
+                new Message(2, "What up??", DateTime.Now, false, "shtusel"),
+                new Message(3, "I am good", DateTime.Now, true, "itay"),
+                new Message(4, "glad to hear", DateTime.Now, false, "shtusel"),
+            }),
+            new Chat("4", new List<string>
+            {
+                "itay", "kingDavid"
+            },new List<Message>{
+                new Message(1, "HI!!!! kingDavid", DateTime.Now, true, "itay"),
+                new Message(2, "What up??", DateTime.Now, false, "kingDavid"),
+                new Message(3, "I am good", DateTime.Now, true, "itay"),
+                new Message(4, "glad to hear", DateTime.Now, false, "kingDavid"),
+            }),
+            new Chat("5", new List<string>
+            {
+                "yonadav", "kingDavid"
+            },new List<Message>{
+                new Message(1, "HI!!!! kingDavid", DateTime.Now, true, "yonadav"),
+                new Message(2, "What up??", DateTime.Now, false, "kingDavid"),
+                new Message(3, "I am good", DateTime.Now, true, "yonadav"),
+                new Message(4, "glad to hear", DateTime.Now, false, "kingDavid"),
+            }),
+             new Chat("6", new List<string>
+            {
+                "yonadav", "kingSolomon"
+            },new List<Message>{
+                new Message(1, "HI!!!! kingSolomon", DateTime.Now, true, "yonadav"),
+                new Message(2, "What up??", DateTime.Now, false, "kingSolomon"),
+                new Message(3, "I am good", DateTime.Now, true, "yonadav"),
+                new Message(4, "glad to hear", DateTime.Now, false, "kingSolomon"),
+            }),
+             new Chat("7", new List<string>
+            {
+                "itay", "kingSolomon"
+            },new List<Message>{
+                new Message(1, "HI!!!! kingSolomon", DateTime.Now, true, "itay"),
+                new Message(2, "What up??", DateTime.Now, false, "kingSolomon"),
+                new Message(3, "I am good", DateTime.Now, true, "itay"),
+                new Message(4, "glad to hear", DateTime.Now, false, "kingSolomon"),
             })
+
+
         };
         public void Create(Chat entity)
         {
