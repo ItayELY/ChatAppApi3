@@ -54,25 +54,20 @@ namespace ChatAppMVC.Controllers
         public IActionResult Register([Bind("id,name,password")] User user)
         {
             return Ok();
-            /*if (ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var q = from u in _context.User
-                        where u.Id == user.Id
-                        select u;
-                if (q.Count() > 0)
+                User? u = _userService.GetById(user.Id);
+                if (u != null)
                 {
                     return BadRequest();
-                    ;
                 }
                 else
                 {
-                    _context.Add(user);
-                    await _context.SaveChangesAsync();
-                    return Created(string.Format("/api/UsersApi/{0}", user.Id), user);
+                    _userService.Create(user);
                 }
             }
             return BadRequest();
-    */
+    
         }
 
         /*

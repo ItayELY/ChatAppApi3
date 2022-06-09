@@ -38,7 +38,8 @@ namespace ChatAppMVC.Controllers
              List<Contact> contactsList = q.ToList();
              return Json(contactsList);*/
             User x = uService.GetById(userId);
-            return Ok(x.Contacts);
+            //   return Ok(x.Contacts);
+            return Ok();
         }
 
         [HttpGet]
@@ -53,7 +54,8 @@ namespace ChatAppMVC.Controllers
              List<Contact> contactsList = q.ToList();
              return Json(contactsList);*/
             User x = uService.GetById(userId);
-            var cont = x.Contacts.Find(x => x.Id == id);
+            //  var cont = x.Contacts.Find(x => x.Id == id);
+            Contact cont = null;
             if(cont == null)
             {
                 return NotFound();
@@ -95,11 +97,11 @@ namespace ChatAppMVC.Controllers
         public IActionResult Contact([Bind("Id,Name,Server")] Contact contact, string userId)
         {
             var curUser = uService.GetById(userId);
-            List<string> inter = new List<string>();
-            inter.Add(userId);
-            inter.Add(contact.Id);
+          //  List<string> inter = new List<string>();
+           // inter.Add(userId);
+           // inter.Add(contact.Id);
             List<Message> messages = new List<Message>();
-            Chat c = new Chat(userId + " " +contact.Id, inter, messages);
+            Chat c = new Chat(userId + " " +contact.Id, userId, contact.Id);
             cService.Create(c);
             curUser.AddContact(contact);
             return StatusCode(201);
@@ -123,7 +125,8 @@ namespace ChatAppMVC.Controllers
         public IActionResult DeleteSpecific(string id, string userId)
         {
             User user = uService.GetById(userId);
-            Contact c = user.Contacts.Find(x => x.Id == id);
+            // Contact c = user.Contacts.Find(x => x.Id == id);
+            Contact c = null;
             user.RemoveContact(c);
             return StatusCode(204);
         }
@@ -136,6 +139,7 @@ namespace ChatAppMVC.Controllers
         public IActionResult GetAllMessages(string userId, string id)
         {
             Chat c = cService.GetBy2Users(id, userId);
+            /*
             foreach(Message m in c.Messages)
             {
                 if (m.SentBy == userId)
@@ -146,8 +150,8 @@ namespace ChatAppMVC.Controllers
                 {
                     m.Sent = false;
                 }
-            }
-            return Ok(c.Messages);
+            */
+            return Ok(c);
         }
 
 
@@ -156,7 +160,8 @@ namespace ChatAppMVC.Controllers
         public IActionResult PostNewMessage([FromBody] string content, string userId, string id)
         {
             Chat c = cService.GetBy2Users(id, userId);
-            c.Messages.Add(new Message(content, DateTime.Now, true, userId));
+            
+            //c.Messages.Add(new Message(content, DateTime.Now, true, userId));
             return StatusCode(201);
         }
 
@@ -167,8 +172,8 @@ namespace ChatAppMVC.Controllers
         public IActionResult GetSpecificMessage(string userId, string id, string id2)
         {
             Chat c = cService.GetBy2Users(id, userId);
-           Message m =  c.Messages.Find(x => x.Id == Int32.Parse(id2));
-            return Ok(m);
+            //Message m =  c.Messages.Find(x => x.Id == Int32.Parse(id2));
+            return Ok(c);
 
         }
 
@@ -177,8 +182,8 @@ namespace ChatAppMVC.Controllers
         public IActionResult PutSpecificMessage([FromBody] string content, string userId, string id, string id2)
         {
             Chat c = cService.GetBy2Users(id, userId);
-            Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
-            m.Content = content;
+           // Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
+            //m.Content = content;
             return StatusCode(204);
         }
 
@@ -187,8 +192,8 @@ namespace ChatAppMVC.Controllers
         public IActionResult DeleteSpecificMessage(string userId, string id, string id2)
         {
             Chat c = cService.GetBy2Users(id, userId);
-            Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
-            c.Messages.Remove(m);
+          //  Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
+          //  c.Messages.Remove(m);
             return StatusCode(204);
         }
 
@@ -202,7 +207,7 @@ namespace ChatAppMVC.Controllers
             User user = uService.GetById(invitation.To);
             if (user != null)
             {
-                Contact contact = new Contact(invitation.From, invitation.From, invitation.Server);
+                Contact contact = new Contact(user.Id, invitation.From, invitation.From, invitation.Server);
                 user.AddContact(contact);
                 return StatusCode(201);
             }
@@ -218,12 +223,14 @@ namespace ChatAppMVC.Controllers
         public IActionResult Tranfer([Bind("From, To, Content")] Transfer transfer)
         {
             User user = uService.GetById(transfer.To);
-            Contact sender = user.Contacts.Find(x => x.Id == transfer.From);
+            //Contact sender = user.Contacts.Find(x => x.Id == transfer.From);
+            Contact sender = null;
             if (user!= null && sender !=null)
             {
-                Message m = new Message(transfer.Content, DateTime.Now, true, transfer.From);
                 Chat ch = cService.GetBy2Users(user.Id, sender.Id);
-                ch.Messages.Add(m);
+
+                Message m = new Message(transfer.Content, DateTime.Now, true, transfer.From, ch.Id);
+                //ch.Messages.Add(m);
                 return StatusCode(201);
             }
             else

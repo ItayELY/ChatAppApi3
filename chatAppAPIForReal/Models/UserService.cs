@@ -1,4 +1,6 @@
-﻿namespace ChatAppMVC.Models
+﻿using chatAppAPIForReal;
+
+namespace ChatAppMVC.Models
 {
 
     public class UserService : IService<User>
@@ -12,28 +14,44 @@
 
         public void Create(User user)
         {
-            _users.Add(user);
+            using (var db = new UsersContext())
+            {
+                db.Add(user);
+                db.SaveChanges();
+            }
         }
 
         public void Delete(string id)
         {
-            _users.Remove(GetById(id));
+            using (var db = new UsersContext())
+            {
+                db.Remove(GetById(id));
+                db.SaveChanges();
+            }
         }
 
         public List<User> GetAll()
         {
-            return _users;
+            using(var db = new UsersContext())
+            {
+                var users = db.Users.ToList();
+                return users;
+            }
         }
 
         public User GetById(string id)
         {
-            return _users.Find(x => x.Id == id);
+            using (var db = new UsersContext())
+            {
+                User? user = db.Users.Find(id);
+                return user;
+            }
         }
 
         public void Update(string id, User user)
         {
-            _users.Remove(GetById(id));
-            _users.Add(user);
+            Delete(id);
+            Create(user);
         }
 
 
@@ -43,6 +61,7 @@
             var userService = new UserService();
             foreach (var chat in chatService.GetAll())
             {
+                    /*
                 foreach (var userId in chat.Interlocuters)
                 {
                     var user = userService.GetById(userId);
@@ -51,6 +70,7 @@
                     var newC = userService.GetById(newCId);
                     user.AddContact(new Contact(newCId, newC.Name, newC.Server));
                 }
+                */
             }
 
         }

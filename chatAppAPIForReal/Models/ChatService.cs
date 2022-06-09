@@ -3,7 +3,8 @@
     public class ChatService : IService<Chat>
     {
         public static List<Chat> _chats =
-            new List<Chat>
+            new List<Chat>();
+            /*
         {
             new Chat("1", new List<string>
             {
@@ -24,6 +25,7 @@
                 new Message(4, "glad to hear", DateTime.Now, false, "perki"),
             })
         };
+            */
         public void Create(Chat entity)
         {
             _chats.Add(entity);
@@ -46,7 +48,8 @@
         }
         public Chat GetBy2Users(string id1, string id2)
         {
-            return _chats.Find(x => x.Interlocuters.Contains(id1) && x.Interlocuters.Contains(id2));
+            return _chats.Find(x => (x.Interlocuter1.Equals(id1) && x.Interlocuter2.Equals(id2)) || 
+                (x.Interlocuter2.Equals(id1) && x.Interlocuter1.Equals(id2)));
         }
 
         public void Update(string id, Chat entity)
@@ -57,8 +60,9 @@
         public Message GetLastMessage(string id1, string id2)
         {
             Chat c = this.GetBy2Users(id1, id2);
-            c.Messages.Sort((x, y) => DateTime.Compare(x.Created, y.Created));
-            return c.Messages.First();
+            //   c.Messages.Sort((x, y) => DateTime.Compare(x.Created, y.Created));
+            //return c.Messages.First();
+            return new Message(1, "hi", DateTime.Now, true, id1, c.Id);
         }
     }
 }
