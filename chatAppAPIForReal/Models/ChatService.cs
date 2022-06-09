@@ -1,4 +1,6 @@
-﻿namespace ChatAppMVC.Models
+﻿using chatAppAPIForReal;
+
+namespace ChatAppMVC.Models
 {
     public class ChatService : IService<Chat>
     {
@@ -28,39 +30,65 @@
             */
         public void Create(Chat entity)
         {
-            _chats.Add(entity);
+            using (var db = new Context())
+            {
+                if (GetById(entity.Id) == null)
+                {
+                    db.Add(entity);
+                    db.SaveChanges();
+                }
+               
+            }
 
         }
 
-        public void Delete(string id)
+        public void Delete(Chat entity)
         {
-            _chats.Remove(GetById(id));
+            using (var db = new Context())
+            {
+                db.Remove(entity);
+                db.SaveChanges();
+            }
         }
 
         public List<Chat> GetAll()
         {
-            return _chats;
+            using (var db = new Context())
+            {
+                return db.chats.ToList();
+            }
         }
 
         public Chat GetById(string id)
         {
-            return _chats.Find(x => x.Id == id);
+            using (var db = new Context())
+            {
+                List<Chat> chats =  db.chats.ToList();
+            
+                return chats.Find(x => x.Id == id);
+            }
         }
         public Chat GetBy2Users(string id1, string id2)
         {
-            return _chats.Find(x => (x.Interlocuter1.Equals(id1) && x.Interlocuter2.Equals(id2)) || 
+            using (var db = new Context())
+            {
+                List<Chat> chats = db.chats.ToList();
+
+                return chats.Find(x => (x.Interlocuter1.Equals(id1) && x.Interlocuter2.Equals(id2)) ||
                 (x.Interlocuter2.Equals(id1) && x.Interlocuter1.Equals(id2)));
+            }
+            
         }
 
         public void Update(string id, Chat entity)
         {
-            _chats.Remove(GetById(id));
-            _chats.Add(entity);
+            Delete(GetById(id));
+            Create(entity);
         }
         public Message GetLastMessage(string id1, string id2)
         {
             Chat c = this.GetBy2Users(id1, id2);
-            //   c.Messages.Sort((x, y) => DateTime.Compare(x.Created, y.Created));
+             //  c.Messages.Sort((x, y) => DateTime.Compare(x.Created, y.Created));
             //return c.Messages.First();
             return new Message(1, "hi", DateTime.Now, true, id1, c.Id);
         }

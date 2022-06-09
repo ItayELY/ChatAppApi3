@@ -9,7 +9,7 @@ using chatAppAPIForReal;
 
 namespace chatAppAPIForReal.Migrations
 {
-    [DbContext(typeof(UsersContext))]
+    [DbContext(typeof(Context))]
     [Migration("20220609125631_initial")]
     partial class initial
     {

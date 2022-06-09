@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ChatAppMVC.Models;
 using chatAppAPIForReal.Models;
+using chatAppAPIForReal;
 
 namespace ChatAppMVC.Controllers
 {
@@ -17,11 +18,13 @@ namespace ChatAppMVC.Controllers
     {
         private readonly IService<User> uService;
         private readonly ChatService cService;
+        private Context context;
 
         public ContactsController()
         {
             uService = new UserService();
             cService = new ChatService();
+            context = new Context();
 
         }
 
@@ -37,9 +40,8 @@ namespace ChatAppMVC.Controllers
                      select currentUserContacts;
              List<Contact> contactsList = q.ToList();
              return Json(contactsList);*/
-            User x = uService.GetById(userId);
-            //   return Ok(x.Contacts);
-            return Ok();
+            var contacts = context.Contacts.ToList();
+            return Ok(contacts.Find(c => c.UserId.Equals(userId)));
         }
 
         [HttpGet]
@@ -53,9 +55,8 @@ namespace ChatAppMVC.Controllers
                      select currentUserContacts;
              List<Contact> contactsList = q.ToList();
              return Json(contactsList);*/
-            User x = uService.GetById(userId);
-            //  var cont = x.Contacts.Find(x => x.Id == id);
-            Contact cont = null;
+            List<Contact> contacts = context.Contacts.ToList();
+            var cont = contacts.Find(x => x.Id == id);
             if(cont == null)
             {
                 return NotFound();
@@ -103,7 +104,12 @@ namespace ChatAppMVC.Controllers
             List<Message> messages = new List<Message>();
             Chat c = new Chat(userId + " " +contact.Id, userId, contact.Id);
             cService.Create(c);
-            curUser.AddContact(contact);
+            if(context.Contacts.ToList().Any(x => x.UserId.Equals(contact.UserId) && x.Id == contact.Id))
+            {
+                return StatusCode(201);
+            }
+            context.Contacts.Add(contact);
+            context.SaveChanges();
             return StatusCode(201);
         }
 
@@ -139,8 +145,9 @@ namespace ChatAppMVC.Controllers
         public IActionResult GetAllMessages(string userId, string id)
         {
             Chat c = cService.GetBy2Users(id, userId);
-            /*
-            foreach(Message m in c.Messages)
+            List<Message> messages = context.messages.ToList();
+
+            foreach (Message m in messages)
             {
                 if (m.SentBy == userId)
                 {
@@ -150,8 +157,10 @@ namespace ChatAppMVC.Controllers
                 {
                     m.Sent = false;
                 }
-            */
-            return Ok(c);
+
+            }
+            return Ok(messages);
+
         }
 
 
@@ -161,7 +170,9 @@ namespace ChatAppMVC.Controllers
         {
             Chat c = cService.GetBy2Users(id, userId);
             
-            //c.Messages.Add(new Message(content, DateTime.Now, true, userId));
+            context.messages.Add(new Message(content, DateTime.Now, true, userId, c.Id));
+            context.SaveChanges();
+
             return StatusCode(201);
         }
 
@@ -172,7 +183,9 @@ namespace ChatAppMVC.Controllers
         public IActionResult GetSpecificMessage(string userId, string id, string id2)
         {
             Chat c = cService.GetBy2Users(id, userId);
-            //Message m =  c.Messages.Find(x => x.Id == Int32.Parse(id2));
+            List<Message> messages = context.messages.ToList();
+
+            Message m =  messages.Find(x => (x.Id == Int32.Parse(id2)) && x.ChatId.Equals(c.Id));
             return Ok(c);
 
         }
@@ -208,7 +221,9 @@ namespace ChatAppMVC.Controllers
             if (user != null)
             {
                 Contact contact = new Contact(user.Id, invitation.From, invitation.From, invitation.Server);
-                user.AddContact(contact);
+                context.Contacts.Add(contact);
+                context.SaveChanges();
+
                 return StatusCode(201);
             }
             else
@@ -230,7 +245,9 @@ namespace ChatAppMVC.Controllers
                 Chat ch = cService.GetBy2Users(user.Id, sender.Id);
 
                 Message m = new Message(transfer.Content, DateTime.Now, true, transfer.From, ch.Id);
-                //ch.Messages.Add(m);
+                context.messages.Add(m);
+                context.SaveChanges();
+
                 return StatusCode(201);
             }
             else

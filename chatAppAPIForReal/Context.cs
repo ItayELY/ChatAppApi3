@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace chatAppAPIForReal
 {
-    public class UsersContext : DbContext
+    public class Context : DbContext
     {
         private const string connectionString = "server=localhost;port=3306;database=chatappapidb;user=root;password=itai190901";
 
@@ -18,5 +18,10 @@ namespace chatAppAPIForReal
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
+        public DbSet<Message> messages { get; set; }
+
+        public DbSet<Chat> chats { get; set; }
+
     }
 }

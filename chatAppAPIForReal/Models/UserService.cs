@@ -14,25 +14,28 @@ namespace ChatAppMVC.Models
 
         public void Create(User user)
         {
-            using (var db = new UsersContext())
+            using (var db = new Context())
             {
-                db.Add(user);
-                db.SaveChanges();
+                if(GetById(user.Id) == null){
+                    db.Add(user);
+                    db.SaveChanges();
+                }
+                
             }
         }
 
-        public void Delete(string id)
+        public void Delete(User entity)
         {
-            using (var db = new UsersContext())
+            using (var db = new Context())
             {
-                db.Remove(GetById(id));
+                db.Remove(entity);
                 db.SaveChanges();
             }
         }
 
         public List<User> GetAll()
         {
-            using(var db = new UsersContext())
+            using(var db = new Context())
             {
                 var users = db.Users.ToList();
                 return users;
@@ -41,16 +44,16 @@ namespace ChatAppMVC.Models
 
         public User GetById(string id)
         {
-            using (var db = new UsersContext())
+            using (var db = new Context())
             {
-                User? user = db.Users.Find(id);
-                return user;
+                List<User> users = db.Users.ToList();
+                return users.Find(u => u.Id.Equals(id));
             }
         }
 
         public void Update(string id, User user)
         {
-            Delete(id);
+            Delete(GetById(id));
             Create(user);
         }
 
