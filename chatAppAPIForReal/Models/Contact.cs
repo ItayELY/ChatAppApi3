@@ -1,7 +1,11 @@
-﻿namespace ChatAppMVC.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ChatAppMVC.Models
 {
     public class Contact
     {
+        [Key]
+        public string ContactKey { get; set; }
         public string UserId { get; set; }
         public string? Id { get; set; }
         public string Name { get; set; }
@@ -15,7 +19,7 @@
             Id = id;
             Name = name;
             Server = server;
-            
+            ContactKey = userId + id;    
         }
 
     }

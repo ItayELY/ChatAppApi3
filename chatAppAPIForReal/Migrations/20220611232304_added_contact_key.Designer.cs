@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using chatAppAPIForReal;
 
@@ -10,9 +11,10 @@ using chatAppAPIForReal;
 namespace chatAppAPIForReal.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class UsersContextModelSnapshot : ModelSnapshot
+    [Migration("20220611232304_added_contact_key")]
+    partial class added_contact_key
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,11 +39,8 @@ namespace chatAppAPIForReal.Migrations
 
             modelBuilder.Entity("ChatAppMVC.Models.Contact", b =>
                 {
-                    b.Property<string>("ContactKey")
-                        .HasColumnType("varchar(255)");
-
                     b.Property<string>("Id")
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime?>("LastMessageDate")
                         .HasColumnType("datetime(6)");
@@ -55,7 +54,7 @@ namespace chatAppAPIForReal.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("longtext");
 
-                    b.HasKey("ContactKey");
+                    b.HasKey("Id");
 
                     b.ToTable("Contacts");
                 });

@@ -40,8 +40,9 @@ namespace ChatAppMVC.Controllers
                      select currentUserContacts;
              List<Contact> contactsList = q.ToList();
              return Json(contactsList);*/
-            var contacts = context.Contacts.ToList();
-            return Ok(contacts.Find(c => c.UserId.Equals(userId)));
+            List<Contact> contacts = context.Contacts.ToList();
+            List<Contact> relevant = contacts.Where(c => c.UserId == userId).ToList();
+            return Ok(relevant);
         }
 
         [HttpGet]
@@ -117,8 +118,6 @@ namespace ChatAppMVC.Controllers
         [Route("/api/contacts/{id}")]
         public IActionResult PutSpecific([Bind("Name,Server")] Contact con, string id, string userId)
         {
-
-
             con.Id = id;
             var curUser = uService.GetById(userId);
             curUser.UpdateContact(id, con);
@@ -146,8 +145,9 @@ namespace ChatAppMVC.Controllers
         {
             Chat c = cService.GetBy2Users(id, userId);
             List<Message> messages = context.messages.ToList();
+            List<Message> relevant = messages.Where(m => m.ChatId == c.Id).ToList();
 
-            foreach (Message m in messages)
+            foreach (Message m in relevant)
             {
                 if (m.SentBy == userId)
                 {
