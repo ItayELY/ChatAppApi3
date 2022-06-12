@@ -103,9 +103,14 @@ namespace ChatAppMVC.Controllers
            // inter.Add(userId);
            // inter.Add(contact.Id);
             List<Message> messages = new List<Message>();
-            Chat c = new Chat(userId + " " +contact.Id, userId, contact.Id);
-            cService.Create(c);
-            if(context.Contacts.ToList().Any(x => x.UserId.Equals(contact.UserId) && x.Id == contact.Id))
+            Chat c = cService.GetBy2Users(userId, contact.Id);
+            if(c == null)
+            {
+                Chat cNew = new Chat(userId + " " + contact.Id, userId, contact.Id);
+                cService.Create(cNew);
+
+            }
+            if (context.Contacts.ToList().Any(x => x.UserId.Equals(contact.UserId) && x.Id == contact.Id))
             {
                 return StatusCode(201);
             }
