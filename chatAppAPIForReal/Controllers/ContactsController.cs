@@ -150,7 +150,12 @@ namespace ChatAppMVC.Controllers
         {
             Chat c = cService.GetBy2Users(id, userId);
             List<Message> messages = context.messages.ToList();
-            List<Message> relevant = messages.Where(m => m.ChatId == c.Id).ToList();
+            List<Message> relevant = new List<Message>();
+            if (c != null)
+            {
+                relevant = messages.Where(m => m.ChatId == c.Id).ToList();
+
+            }
 
             foreach (Message m in relevant)
             {
