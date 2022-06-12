@@ -159,7 +159,7 @@ namespace ChatAppMVC.Controllers
                 }
 
             }
-            return Ok(messages);
+            return Ok(relevant);
 
         }
 
