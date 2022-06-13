@@ -90,7 +90,7 @@ namespace ChatAppMVC.Models
             Chat c = this.GetBy2Users(id1, id2);
              //  c.Messages.Sort((x, y) => DateTime.Compare(x.Created, y.Created));
             //return c.Messages.First();
-            return new Message(1, "hi", DateTime.Now, true, id1, c.Id);
+            return new Message(1, "hi", DateTime.Now.ToLongDateString(), true, id1, c.Id);
         }
     }
 }

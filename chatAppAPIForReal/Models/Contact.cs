@@ -11,7 +11,7 @@ namespace ChatAppMVC.Models
         public string Name { get; set; }
         public string Server { get; set; }
         public string? LastMessageContent;
-        public DateTime? LastMessageDate { get; set; }
+        public String? LastMessageDate { get; set; }
 
         public Contact(string userId, string id, string name, string server)   
         {

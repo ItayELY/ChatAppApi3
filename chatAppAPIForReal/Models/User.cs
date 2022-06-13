@@ -18,7 +18,7 @@ namespace ChatAppMVC.Models
             Name = name;
             Password = password;
           //  Contacts = new List<Contact>();
-            Server = "http://localhost:7228";
+            Server = "http://localhost:5200";
         }
 
        

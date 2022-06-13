@@ -114,9 +114,18 @@ namespace ChatAppMVC.Controllers
             {
                 return StatusCode(201);
             }
-            context.Contacts.Add(contact);
-            context.SaveChanges();
-            return StatusCode(201);
+            User u =uService.GetById(contact.Id);
+            if(u != null)
+            {
+                contact.Server = u.Server;
+                contact.LastMessageContent = "";
+                contact.LastMessageDate = "";
+                context.Contacts.Add(contact);
+                context.SaveChanges();
+                return StatusCode(201);
+            }
+            return StatusCode(404);
+            
         }
 
         [HttpPut]
@@ -180,7 +189,7 @@ namespace ChatAppMVC.Controllers
         {
             Chat c = cService.GetBy2Users(id, userId);
             
-            context.messages.Add(new Message(content, DateTime.Now, true, userId, c.Id));
+            context.messages.Add(new Message(content, DateTime.Now.ToString("MM-dd-yy, hh-mm"), true, userId, c.Id));
             context.SaveChanges();
 
             return StatusCode(201);
@@ -254,7 +263,7 @@ namespace ChatAppMVC.Controllers
             {
                 Chat ch = cService.GetBy2Users(user.Id, sender.Id);
 
-                Message m = new Message(transfer.Content, DateTime.Now, true, transfer.From, ch.Id);
+                Message m = new Message(transfer.Content, DateTime.Now.ToString("MM-dd-yy, hh-mm"), true, transfer.From, ch.Id);
                 context.messages.Add(m);
                 context.SaveChanges();
 

@@ -9,12 +9,12 @@ namespace ChatAppMVC.Models
         [Key]
         public int Id { get; set; }
        public string Content { get; set; }
-        public DateTime Created { get; set; }
+        public String Created { get; set; }
         public bool Sent { get; set; }
 
         public string SentBy { get; set; }
 
-        public Message(string content, DateTime created, bool sent, string sentBy, string chatId)
+        public Message(string content, string created, bool sent, string sentBy, string chatId)
         {
             CountId++;
             Content = content;
@@ -24,7 +24,7 @@ namespace ChatAppMVC.Models
             ChatId = chatId;
         }
 
-        public Message(int id, string content, DateTime created, bool sent, string sentBy, string chatId)
+        public Message(int id, string content, string created, bool sent, string sentBy, string chatId)
         {
             Content = content;
             Created = created;
