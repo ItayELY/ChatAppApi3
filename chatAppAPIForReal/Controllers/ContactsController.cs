@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ChatAppMVC.Models;
 using chatAppAPIForReal.Models;
+using chatAppAPIForReal;
+using chatAppAPIForReal.Controllers;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 namespace ChatAppMVC.Controllers
 {
@@ -17,11 +21,13 @@ namespace ChatAppMVC.Controllers
     {
         private readonly IService<User> uService;
         private readonly ChatService cService;
+        private Context context;
 
         public ContactsController()
         {
             uService = new UserService();
             cService = new ChatService();
+            context = new Context();
 
         }
 
@@ -37,8 +43,9 @@ namespace ChatAppMVC.Controllers
                      select currentUserContacts;
              List<Contact> contactsList = q.ToList();
              return Json(contactsList);*/
-            User x = uService.GetById(userId);
-            return Ok(x.Contacts);
+            List<Contact> contacts = context.Contacts.ToList();
+            List<Contact> relevant = contacts.Where(c => c.UserId == userId).ToList();
+            return Ok(relevant);
         }
 
         [HttpGet]
@@ -52,14 +59,18 @@ namespace ChatAppMVC.Controllers
                      select currentUserContacts;
              List<Contact> contactsList = q.ToList();
              return Json(contactsList);*/
-            User x = uService.GetById(userId);
-            var cont = x.Contacts.Find(x => x.Id == id);
+            List<Contact> contacts = context.Contacts.ToList();
+            var cont = contacts.Find(x => x.Id == id);
             if(cont == null)
             {
                 return NotFound();
             }
-            cont.Last = cService.GetLastMessage(userId, id).Content.ToString();
-            cont.LastDate = cService.GetLastMessage(userId, id).Created;
+            Message last = cService.GetLastMessage(userId, id);
+            if(last != null)
+            {
+                cont.LastMessageContent = last.Content;
+                cont.LastMessageDate = last.Created;
+            }
             return Ok(cont);
         }
 
@@ -95,22 +106,39 @@ namespace ChatAppMVC.Controllers
         public IActionResult Contact([Bind("Id,Name,Server")] Contact contact, string userId)
         {
             var curUser = uService.GetById(userId);
-            List<string> inter = new List<string>();
-            inter.Add(userId);
-            inter.Add(contact.Id);
+          //  List<string> inter = new List<string>();
+           // inter.Add(userId);
+           // inter.Add(contact.Id);
             List<Message> messages = new List<Message>();
-            Chat c = new Chat(userId + " " +contact.Id, inter, messages);
-            cService.Create(c);
-            curUser.AddContact(contact);
-            return StatusCode(201);
+            Chat c = cService.GetBy2Users(userId, contact.Id);
+            if(c == null)
+            {
+                Chat cNew = new Chat(userId + " " + contact.Id, userId, contact.Id);
+                cService.Create(cNew);
+
+            }
+            if (context.Contacts.ToList().Any(x => x.UserId.Equals(contact.UserId) && x.Id == contact.Id))
+            {
+                return StatusCode(201);
+            }
+            User u =uService.GetById(contact.Id);
+            if(u != null)
+            {
+                contact.Server = u.Server;
+                contact.LastMessageContent = "";
+                contact.LastMessageDate = "";
+                context.Contacts.Add(contact);
+                context.SaveChanges();
+                return StatusCode(201);
+            }
+            return StatusCode(404);
+            
         }
 
         [HttpPut]
         [Route("/api/contacts/{id}")]
         public IActionResult PutSpecific([Bind("Name,Server")] Contact con, string id, string userId)
         {
-
-
             con.Id = id;
             var curUser = uService.GetById(userId);
             curUser.UpdateContact(id, con);
@@ -123,7 +151,8 @@ namespace ChatAppMVC.Controllers
         public IActionResult DeleteSpecific(string id, string userId)
         {
             User user = uService.GetById(userId);
-            Contact c = user.Contacts.Find(x => x.Id == id);
+            // Contact c = user.Contacts.Find(x => x.Id == id);
+            Contact c = null;
             user.RemoveContact(c);
             return StatusCode(204);
         }
@@ -136,7 +165,15 @@ namespace ChatAppMVC.Controllers
         public IActionResult GetAllMessages(string userId, string id)
         {
             Chat c = cService.GetBy2Users(id, userId);
-            foreach(Message m in c.Messages)
+            List<Message> messages = context.messages.ToList();
+            List<Message> relevant = new List<Message>();
+            if (c != null)
+            {
+                relevant = messages.Where(m => m.ChatId == c.Id).ToList();
+
+            }
+
+            foreach (Message m in relevant)
             {
                 if (m.SentBy == userId)
                 {
@@ -146,8 +183,10 @@ namespace ChatAppMVC.Controllers
                 {
                     m.Sent = false;
                 }
+
             }
-            return Ok(c.Messages);
+            return Ok(relevant);
+
         }
 
 
@@ -156,7 +195,10 @@ namespace ChatAppMVC.Controllers
         public IActionResult PostNewMessage([FromBody] string content, string userId, string id)
         {
             Chat c = cService.GetBy2Users(id, userId);
-            c.Messages.Add(new Message(content, DateTime.Now, true, userId));
+            
+            context.messages.Add(new Message(content, DateTime.Now.ToString("MM-dd-yy, hh-mm"), true, userId, c.Id));
+            context.SaveChanges();
+
             return StatusCode(201);
         }
 
@@ -167,8 +209,10 @@ namespace ChatAppMVC.Controllers
         public IActionResult GetSpecificMessage(string userId, string id, string id2)
         {
             Chat c = cService.GetBy2Users(id, userId);
-           Message m =  c.Messages.Find(x => x.Id == Int32.Parse(id2));
-            return Ok(m);
+            List<Message> messages = context.messages.ToList();
+
+            Message m =  messages.Find(x => (x.Id == Int32.Parse(id2)) && x.ChatId.Equals(c.Id));
+            return Ok(c);
 
         }
 
@@ -177,8 +221,8 @@ namespace ChatAppMVC.Controllers
         public IActionResult PutSpecificMessage([FromBody] string content, string userId, string id, string id2)
         {
             Chat c = cService.GetBy2Users(id, userId);
-            Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
-            m.Content = content;
+           // Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
+            //m.Content = content;
             return StatusCode(204);
         }
 
@@ -187,8 +231,8 @@ namespace ChatAppMVC.Controllers
         public IActionResult DeleteSpecificMessage(string userId, string id, string id2)
         {
             Chat c = cService.GetBy2Users(id, userId);
-            Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
-            c.Messages.Remove(m);
+          //  Message m = c.Messages.Find(x => x.Id == Int32.Parse(id2));
+          //  c.Messages.Remove(m);
             return StatusCode(204);
         }
 
@@ -202,8 +246,10 @@ namespace ChatAppMVC.Controllers
             User user = uService.GetById(invitation.To);
             if (user != null)
             {
-                Contact contact = new Contact(invitation.From, invitation.From, invitation.Server);
-                user.AddContact(contact);
+                Contact contact = new Contact(user.Id, invitation.From, invitation.From, invitation.Server);
+                context.Contacts.Add(contact);
+                context.SaveChanges();
+
                 return StatusCode(201);
             }
             else
@@ -215,15 +261,20 @@ namespace ChatAppMVC.Controllers
 
         [HttpPost]
         [Route("/api/transfer")]
-        public IActionResult Tranfer([Bind("From, To, Content")] Transfer transfer)
+        public async Task<IActionResult> Tranfer([Bind("From, To, Content")] Transfer transfer)
         {
             User user = uService.GetById(transfer.To);
-            Contact sender = user.Contacts.Find(x => x.Id == transfer.From);
+            //Contact sender = user.Contacts.Find(x => x.Id == transfer.From);
+            Contact sender = null;
             if (user!= null && sender !=null)
             {
-                Message m = new Message(transfer.Content, DateTime.Now, true, transfer.From);
                 Chat ch = cService.GetBy2Users(user.Id, sender.Id);
-                ch.Messages.Add(m);
+
+                Message m = new Message(transfer.Content, DateTime.Now.ToString("MM-dd-yy, hh-mm"), true, transfer.From, ch.Id);
+                context.messages.Add(m);
+                await SendMessageByFirebase(transfer);
+                context.SaveChanges();
+
                 return StatusCode(201);
             }
             else
@@ -231,6 +282,38 @@ namespace ChatAppMVC.Controllers
                 return StatusCode(422);
 
             }
+        }
+
+        private async Task SendMessageByFirebase(Transfer transfer)
+        {
+            if (transfer == null)
+                return;
+            if (!TokenController.IdToFirebase.ContainsKey(transfer.To))
+                return;
+            var toToken = TokenController.IdToFirebase[transfer.To];
+
+            if (FirebaseApp.DefaultInstance == null)
+                FirebaseApp.Create(new AppOptions
+                {
+                    Credential = GoogleCredential.FromFile("secureKey.json")
+                });
+
+            FirebaseAdmin.Messaging.Message msg = new FirebaseAdmin.Messaging.Message()
+            {
+                Data = new Dictionary<string, string>()
+                {
+                    { "Sent By:", transfer.From},
+                    {"Content:", transfer.Content }
+                },
+                Token = toToken,
+                Notification = new FirebaseAdmin.Messaging.Notification()
+                {
+                    Title = "New Message",
+                    Body = transfer.Content
+                }
+            };
+            var response = await FirebaseAdmin.Messaging.FirebaseMessaging.DefaultInstance.SendAsync(msg);
+
         }
 
 

@@ -69,7 +69,7 @@ namespace ChatAppMVC.Controllers
             else
             {
                 User newU = new User(reg.Id, reg.Name, reg.Password);
-                _userService.GetAll().Add(newU);
+                _userService.Create(newU);
                 return StatusCode(201);
             }
 

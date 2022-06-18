@@ -1,9 +1,12 @@
-﻿namespace ChatAppMVC.Models
+﻿using chatAppAPIForReal;
+
+namespace ChatAppMVC.Models
 {
     public class ChatService : IService<Chat>
     {
         public static List<Chat> _chats =
-            new List<Chat>
+            new List<Chat>();
+            /*
         {
             new Chat("1", new List<string>
             {
@@ -16,96 +19,82 @@
             }),
             new Chat("2", new List<string>
             {
-                "yonadav", "shtusel"
+                "yonadav", "perki"
             },new List<Message>{
-                new Message(1, "HI!!!! shtusel", DateTime.Now, true, "yonadav"),
-                new Message(2, "What up??", DateTime.Now, false, "shtusel"),
+                new Message(1, "HI!!!! perki", DateTime.Now, true, "yonadav"),
+                new Message(2, "What up??", DateTime.Now, false, "perki"),
                 new Message(3, "I am good", DateTime.Now, true, "yonadav"),
-                new Message(4, "glad to hear", DateTime.Now, false, "shtusel"),
-            }),
-            new Chat("3", new List<string>
-            {
-                "itay", "shtusel"
-            },new List<Message>{
-                new Message(1, "HI!!!! shtusel", DateTime.Now, true, "itay"),
-                new Message(2, "What up??", DateTime.Now, false, "shtusel"),
-                new Message(3, "I am good", DateTime.Now, true, "itay"),
-                new Message(4, "glad to hear", DateTime.Now, false, "shtusel"),
-            }),
-            new Chat("4", new List<string>
-            {
-                "itay", "kingDavid"
-            },new List<Message>{
-                new Message(1, "HI!!!! kingDavid", DateTime.Now, true, "itay"),
-                new Message(2, "What up??", DateTime.Now, false, "kingDavid"),
-                new Message(3, "I am good", DateTime.Now, true, "itay"),
-                new Message(4, "glad to hear", DateTime.Now, false, "kingDavid"),
-            }),
-            new Chat("5", new List<string>
-            {
-                "yonadav", "kingDavid"
-            },new List<Message>{
-                new Message(1, "HI!!!! kingDavid", DateTime.Now, true, "yonadav"),
-                new Message(2, "What up??", DateTime.Now, false, "kingDavid"),
-                new Message(3, "I am good", DateTime.Now, true, "yonadav"),
-                new Message(4, "glad to hear", DateTime.Now, false, "kingDavid"),
-            }),
-             new Chat("6", new List<string>
-            {
-                "yonadav", "kingSolomon"
-            },new List<Message>{
-                new Message(1, "HI!!!! kingSolomon", DateTime.Now, true, "yonadav"),
-                new Message(2, "What up??", DateTime.Now, false, "kingSolomon"),
-                new Message(3, "I am good", DateTime.Now, true, "yonadav"),
-                new Message(4, "glad to hear", DateTime.Now, false, "kingSolomon"),
-            }),
-             new Chat("7", new List<string>
-            {
-                "itay", "kingSolomon"
-            },new List<Message>{
-                new Message(1, "HI!!!! kingSolomon", DateTime.Now, true, "itay"),
-                new Message(2, "What up??", DateTime.Now, false, "kingSolomon"),
-                new Message(3, "I am good", DateTime.Now, true, "itay"),
-                new Message(4, "glad to hear", DateTime.Now, false, "kingSolomon"),
+                new Message(4, "glad to hear", DateTime.Now, false, "perki"),
             })
-
-
         };
+            */
         public void Create(Chat entity)
         {
-            _chats.Add(entity);
+            using (var db = new Context())
+            {
+                if (GetById(entity.Id) == null)
+                {
+                    db.Add(entity);
+                    db.SaveChanges();
+                }
+               
+            }
 
         }
 
-        public void Delete(string id)
+        public void Delete(Chat entity)
         {
-            _chats.Remove(GetById(id));
+            using (var db = new Context())
+            {
+                db.Remove(entity);
+                db.SaveChanges();
+            }
         }
 
         public List<Chat> GetAll()
         {
-            return _chats;
+            using (var db = new Context())
+            {
+                return db.chats.ToList();
+            }
         }
 
         public Chat GetById(string id)
         {
-            return _chats.Find(x => x.Id == id);
+            using (var db = new Context())
+            {
+                List<Chat> chats =  db.chats.ToList();
+            
+                return chats.Find(x => x.Id == id);
+            }
         }
         public Chat GetBy2Users(string id1, string id2)
         {
-            return _chats.Find(x => x.Interlocuters.Contains(id1) && x.Interlocuters.Contains(id2));
+            using (var db = new Context())
+            {
+                List<Chat> chats = db.chats.ToList();
+
+                return chats.Find(x => (x.Interlocuter1.Equals(id1) && x.Interlocuter2.Equals(id2)) ||
+                (x.Interlocuter2.Equals(id1) && x.Interlocuter1.Equals(id2)));
+            }
+            
         }
 
         public void Update(string id, Chat entity)
         {
-            _chats.Remove(GetById(id));
-            _chats.Add(entity);
+            Delete(GetById(id));
+            Create(entity);
         }
         public Message GetLastMessage(string id1, string id2)
         {
-            Chat c = this.GetBy2Users(id1, id2);
-            c.Messages.Sort((x, y) => DateTime.Compare(x.Created, y.Created));
-            return c.Messages.First();
+            using (var db = new Context())
+            {
+                Chat c = this.GetBy2Users(id1, id2);
+                List<Message> messages = db.messages.ToList();
+                Message latest = messages.MaxBy(x => x.Id);
+                return latest;
+            }
+                
         }
     }
 }

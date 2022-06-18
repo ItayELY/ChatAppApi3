@@ -1,23 +1,25 @@
-﻿namespace ChatAppMVC.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ChatAppMVC.Models
 {
     public class Contact
     {
-        //public string UserId { get; set; }
+        [Key]
+        public string ContactKey { get; set; }
+        public string UserId { get; set; }
         public string? Id { get; set; }
-        //public string ContactId { get; set; }
         public string Name { get; set; }
         public string Server { get; set; }
-        //LastMessageContent
-        public string? Last { get; set; }
-        //LastMessageDate
-        public DateTime? LastDate { get; set; }
+        public string? LastMessageContent;
+        public String? LastMessageDate { get; set; }
 
-        public Contact(string id, string name, string server)   
+        public Contact(string userId, string id, string name, string server)   
         {
+            UserId = userId;
             Id = id;
             Name = name;
             Server = server;
-            
+            ContactKey = userId + id;    
         }
 
     }
