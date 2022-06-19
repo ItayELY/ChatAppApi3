@@ -261,18 +261,23 @@ namespace ChatAppMVC.Controllers
 
         [HttpPost]
         [Route("/api/transfer")]
-        public async Task<IActionResult> Tranfer([Bind("From, To, Content")] Transfer transfer)
+        public async Task<IActionResult> Tranfer([FromBody] TransferObj transferObj)
         {
-            User user = uService.GetById(transfer.To);
-            //Contact sender = user.Contacts.Find(x => x.Id == transfer.From);
-            Contact sender = null;
-            if (user!= null && sender !=null)
+            User receiver = uService.GetById(transferObj.To);
+            User sender = uService.GetById(transferObj.From);
+            if (sender == null)
             {
-                Chat ch = cService.GetBy2Users(user.Id, sender.Id);
+                uService.Create(new Models.User(transferObj.From, transferObj.From, "elad"));
+            }
+            if (receiver == null) return NotFound();
 
-                Message m = new Message(transfer.Content, DateTime.Now.ToString("MM-dd-yy, hh-mm"), true, transfer.From, ch.Id);
+            if (sender != null && receiver != null)
+            {
+                Chat ch = cService.GetBy2Users(receiver.Id, sender.Id);
+
+                Message m = new Message(transferObj.Content, DateTime.Now.ToString("MM-dd-yy, hh-mm"), true, transferObj.From, ch.Id);
                 context.messages.Add(m);
-                await SendMessageByFirebase(transfer);
+                await SendMessageByFirebase(transferObj);
                 context.SaveChanges();
 
                 return StatusCode(201);
@@ -284,7 +289,7 @@ namespace ChatAppMVC.Controllers
             }
         }
 
-        private async Task SendMessageByFirebase(Transfer transfer)
+        private async Task SendMessageByFirebase(TransferObj transfer)
         {
             if (transfer == null)
                 return;
