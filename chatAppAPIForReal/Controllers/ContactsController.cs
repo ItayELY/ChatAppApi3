@@ -193,13 +193,13 @@ namespace ChatAppMVC.Controllers
 
             }
             return Ok(relevant);
-    
+
         }
 
 
         [HttpPost]
         [Route("/api/contacts/{id}/messages")]
-        public async Task<IActionResult> PostNewMessage([FromBody] string content, string userId, string id)
+        public async Task <IActionResult> PostNewMessage([FromBody] string content, string userId, string id)
         {
             Chat c = cService.GetBy2Users(id, userId);
             

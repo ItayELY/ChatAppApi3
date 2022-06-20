@@ -5,7 +5,7 @@ namespace chatAppAPIForReal
 {
     public class Context : DbContext
     {
-        private const string connectionString = "server=localhost;port=3306;database=chatappapidb;user=root;password=itaymariadb";
+        private const string connectionString = "server=localhost;port=3306;database=chatappapidb;user=root;password=itai190901";
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
