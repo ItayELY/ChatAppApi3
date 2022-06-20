@@ -45,6 +45,12 @@ namespace ChatAppMVC.Controllers
              return Json(contactsList);*/
             List<Contact> contacts = context.Contacts.ToList();
             List<Contact> relevant = contacts.Where(c => c.UserId == userId).ToList();
+            foreach (Contact contact in relevant)
+            {
+                Message m = cService.GetLastMessage(userId, contact.Id);
+                contact.LastMessageContent = m.Content;
+                contact.LastMessageDate = m.Created;
+            }
             return Ok(relevant);
         }
 
@@ -186,19 +192,23 @@ namespace ChatAppMVC.Controllers
 
             }
             return Ok(relevant);
-
+    
         }
 
 
         [HttpPost]
         [Route("/api/contacts/{id}/messages")]
-        public IActionResult PostNewMessage([FromBody] string content, string userId, string id)
+        public async Task<IActionResult> PostNewMessage([FromBody] string content, string userId, string id)
         {
             Chat c = cService.GetBy2Users(id, userId);
             
             context.messages.Add(new Message(content, DateTime.Now.ToString("MM-dd-yy, hh-mm"), true, userId, c.Id));
             context.SaveChanges();
-
+            TransferObj obj = new TransferObj();
+            obj.Content = content;
+            obj.From = userId;
+            obj.To = id;
+            await SendMessageByFirebase(obj);
             return StatusCode(201);
         }
 
