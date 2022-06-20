@@ -10,8 +10,8 @@ using chatAppAPIForReal;
 namespace chatAppAPIForReal.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20220617105048_init1")]
-    partial class init1
+    [Migration("20220620175834_changes_lastMessageContent")]
+    partial class changes_lastMessageContent
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -42,6 +42,9 @@ namespace chatAppAPIForReal.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Id")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastMessageContent")
                         .HasColumnType("longtext");
 
                     b.Property<string>("LastMessageDate")

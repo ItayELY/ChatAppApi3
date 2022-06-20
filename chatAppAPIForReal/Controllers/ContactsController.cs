@@ -77,6 +77,7 @@ namespace ChatAppMVC.Controllers
                 cont.LastMessageContent = last.Content;
                 cont.LastMessageDate = last.Created;
             }
+           
             return Ok(cont);
         }
 
