@@ -45,6 +45,12 @@ namespace ChatAppMVC.Controllers
              return Json(contactsList);*/
             List<Contact> contacts = context.Contacts.ToList();
             List<Contact> relevant = contacts.Where(c => c.UserId == userId).ToList();
+            foreach (Contact contact in relevant)
+            {
+                Message m = cService.GetLastMessage(userId, contact.Id);
+                contact.LastMessageContent = m.Content;
+                contact.LastMessageDate = m.Created;
+            }
             return Ok(relevant);
         }
 
@@ -71,6 +77,7 @@ namespace ChatAppMVC.Controllers
                 cont.LastMessageContent = last.Content;
                 cont.LastMessageDate = last.Created;
             }
+           
             return Ok(cont);
         }
 

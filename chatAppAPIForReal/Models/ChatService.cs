@@ -90,7 +90,7 @@ namespace ChatAppMVC.Models
             using (var db = new Context())
             {
                 Chat c = this.GetBy2Users(id1, id2);
-                List<Message> messages = db.messages.ToList();
+                List<Message> messages = db.messages.Where(x => x.ChatId == c.Id).ToList();
                 Message latest = messages.MaxBy(x => x.Id);
                 return latest;
             }

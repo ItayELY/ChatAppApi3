@@ -42,6 +42,9 @@ namespace chatAppAPIForReal.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("LastMessageContent")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("LastMessageDate")
                         .HasColumnType("longtext");
 
