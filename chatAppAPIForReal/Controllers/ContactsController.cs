@@ -48,8 +48,13 @@ namespace ChatAppMVC.Controllers
             foreach (Contact contact in relevant)
             {
                 Message m = cService.GetLastMessage(userId, contact.Id);
-                contact.LastMessageContent = m.Content;
-                contact.LastMessageDate = m.Created;
+                if (m != null)
+                {
+                    contact.LastMessageContent = m.Content;
+                    contact.LastMessageDate = m.Created;
+                }
+                else
+                    contact.LastMessageContent = "No messages";
             }
             return Ok(relevant);
         }
